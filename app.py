@@ -19,9 +19,9 @@ def naves_a_objetos(filas):
     return lista
 
 
-def opciones_naves():
-    naves = nave_db.query_read_all_naves() or []
-    return {fila[0]: fila[1] for fila in naves}
+def naves_por_id():
+    naves = naves_a_objetos(nave_db.query_read_all_naves() or [])
+    return {n.id: n for n in naves}
 
 
 def texto_o_default(valor, default="—"):
@@ -85,7 +85,7 @@ def panel_astronautas():
             st.write(f"Horas de vuelo: {f[4]}")
             st.write(f"Nave asignada: {texto_o_default(f[5])}")
             veterano = (f[4] or 0) >= Astronauta.VET_HORAS_DE_VUELO
-            st.write("Estado: 🎖️ Veterano" if veterano else "Estado: Novato")
+            st.write("Estado: Veterano" if veterano else "Estado: Novato")
             if st.button("Eliminar astronauta", key=f"del_astro_{f[0]}"):
                 astro_db.query_delete_astronauta((f[0],))
                 st.rerun()
@@ -93,7 +93,7 @@ def panel_astronautas():
     st.divider()
 
     st.subheader("Registrar nuevo astronauta")
-    naves = opciones_naves()
+    naves = naves_por_id()
     with st.form("form_astro", clear_on_submit=True):
         nombre = st.text_input("Nombre")
         apellido = st.text_input("Apellido")
@@ -104,7 +104,7 @@ def panel_astronautas():
             nave_id = st.selectbox(
                 "Asignar a nave",
                 options=list(naves.keys()),
-                format_func=lambda i: naves[i],
+                format_func=lambda i: naves[i].nombre_nave,
             )
         else:
             st.caption("No hay naves para asignar todavía.")
@@ -115,10 +115,13 @@ def panel_astronautas():
                 st.error("Nombre y apellido son obligatorios.")
             elif horas < 0:
                 st.error("Las horas de vuelo no pueden ser negativas.")
+            elif not naves:
+                st.error("Primero registrá una nave para poder asignar al astronauta.")
             else:
+                nave_obj = naves[nave_id]
                 nuevo = Astronauta(
                     nombre.strip(), apellido.strip(),
-                    Rango[rango_sel], int(horas), nave_id
+                    Rango[rango_sel], int(horas), nave_obj
                 )
                 astro_db.query_create_astronauta(nuevo)
                 st.success(f"Astronauta '{nombre} {apellido}' registrado.")
@@ -146,7 +149,7 @@ def mapa_estelar():
     st.divider()
 
     st.subheader("Registrar nuevo planeta")
-    naves = opciones_naves()
+    naves = naves_por_id()
     with st.form("form_planeta", clear_on_submit=True):
         nombre = st.text_input("Nombre del planeta")
         distancia = st.number_input("Distancia al Sol (UA)", min_value=0.0, step=0.1)
@@ -156,7 +159,7 @@ def mapa_estelar():
             nave_id = st.selectbox(
                 "Nave asignada",
                 options=list(naves.keys()),
-                format_func=lambda i: naves[i],
+                format_func=lambda i: naves[i].nombre_nave,
             )
         enviar = st.form_submit_button("Guardar planeta")
 
