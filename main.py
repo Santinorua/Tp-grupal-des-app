@@ -1,3 +1,5 @@
-import g4b
+from g4b import Database
 
-g4b.crear_base_espacial()
+db = Database()
+
+db.crear_base_espacial()
