@@ -1,4 +1,5 @@
 from enum import Enum
+from nave import Nave
 
 
 class Rango(Enum):
@@ -12,12 +13,13 @@ class Astronauta:
     VET_HORAS_DE_VUELO = 80
     MULT_HORAS_DE_VUELO = 0.10
 
-    def __init__(self, nombre: str, apellido: str, rango: Rango, horas_de_vuelo: int, nave: str):
+    def __init__(self, nombre: str, apellido: str, rango: Rango, horas_de_vuelo: int, nave: Nave):
         self.nombre = nombre
         self.apellido = apellido
         self.rango = rango
         self.horas_de_vuelo = horas_de_vuelo
-        self.nave_id = nave
+        self.nave_id = nave.id
+        self.id = None
 
     def is_veteran(self) -> bool:
         return self.horas_de_vuelo >= Astronauta.VET_HORAS_DE_VUELO
