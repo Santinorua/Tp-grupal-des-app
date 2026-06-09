@@ -12,7 +12,12 @@ class PlanetaDB:
         cursor = conn.cursor()
         cursor.execute(
             "INSERT INTO planetas (nombre_planeta, distancia_al_sol, tipo_atmosfera, id_nave_asignada) VALUES (?, ?, ?, ?)",
-            (planeta.nombre, planeta, planeta.distanciaAlSol, planeta.idNaveAsignada),
+            (
+                planeta.nombre,          
+                planeta.distanciaAlSol, 
+                planeta.tipoAtmosfera, 
+                planeta.idNaveAsignada  
+            )
         )
         planeta.id = cursor.lastrowid
         conn.commit()
@@ -23,11 +28,11 @@ class PlanetaDB:
         conn = self.db.conectar()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM planetas")
-        data = cursor.fetchone()
+        data = cursor.fetchall() 
         conn.commit()
         conn.close()
         return data
-
+        
     def query_read_planetas_con_nave(self, idNaveAsignada):
         conn = self.db.conectar()
         cursor = conn.cursor()

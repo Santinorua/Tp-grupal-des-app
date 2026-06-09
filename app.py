@@ -46,9 +46,8 @@ def hangar_naves():
             st.write("Carga pesada" if es_pesada else "Carga estándar")
             if st.button("Eliminar nave", key=f"del_nave_{n.id}"):
                 nave_db.query_delete_nave((n.id,))
-                st.rerun()
-
-    st.divider()
+                st.success("Nave eliminada.")
+            st.divider()
 
     st.subheader("Registrar nueva nave")
     with st.form("form_nave", clear_on_submit=True):
@@ -66,7 +65,6 @@ def hangar_naves():
                 nueva = Nave(nombre.strip(), modelo.strip(), int(capacidad))
                 nave_db.query_create_nave(nueva)
                 st.success(f"Nave '{nombre}' registrada correctamente.")
-                st.rerun()
 
 
 def panel_astronautas():
@@ -88,7 +86,7 @@ def panel_astronautas():
             st.write("Estado: Veterano" if veterano else "Estado: Novato")
             if st.button("Eliminar astronauta", key=f"del_astro_{f[0]}"):
                 astro_db.query_delete_astronauta((f[0],))
-                st.rerun()
+                st.success("Astronauta eliminado.")
 
     st.divider()
 
@@ -119,15 +117,58 @@ def panel_astronautas():
                 st.error("Primero registrá una nave para poder asignar al astronauta.")
             else:
                 nave_obj = naves[nave_id]
-                nuevo = Astronauta(
-                    nombre.strip(), apellido.strip(),
-                    Rango[rango_sel], int(horas), nave_obj
-                )
+                nuevo = Astronauta( nombre.strip(), apellido.strip(), Rango[rango_sel], int(horas), nave_obj )
                 astro_db.query_create_astronauta(nuevo)
                 st.success(f"Astronauta '{nombre} {apellido}' registrado.")
-                st.rerun()
 
 def mapa_estelar():
+    st.header("Mapa Estelar (Planetas)")
+    filas = planeta_db.query_read_all_planetas() or []
+    atmosferas = sorted({f[3] for f in filas if f[3]})
+    filtro = st.selectbox("Filtrar por atmósfera", ["Todas"] + atmosferas)
+    if filtro != "Todas":
+    filas = [f for f in filas if f[3] == filtro]
+
+    if not filas:
+        st.info("No hay planetas cargados.")
+        
+    for f in filas:
+        with st.expander(f"#{f[0]} · {f[1]}"):
+            st.write(f"Distancia al Sol: {f[2]} UA")
+            st.write(f"Atmósfera: {texto_o_default(f[3])}")
+            if st.button("Eliminar planeta", key=f"del_plan_{f[0]}"):
+                planeta_db.query_delete_planeta((f[0],))
+                st.success("Planeta eliminado correctamente. Refresque la sección.")
+                st.rerun() 
+
+    st.divider()
+
+    st.subheader("Registrar nuevo planeta")
+    naves = naves_por_id()
+    with st.form("form_planeta", clear_on_submit=True):
+        nombre = st.text_input("Nombre del planeta")
+        distancia = st.number_input("Distancia al Sol (UA)", min_value=0.0, step=0.1)
+        atmosfera = st.text_input("Tipo de atmósfera")
+        nave_id = None
+        if naves:
+            nave_id = st.selectbox(
+                "Nave asignada",
+                options=list(naves.keys()),
+                format_func=lambda i: naves[i].nombre_nave,
+            )
+        enviar = st.form_submit_button("Guardar planeta")
+
+        if enviar:
+            if not nombre.strip():
+                st.error("El nombre del planeta es obligatorio.")
+            elif distancia <= 0:
+                st.error("La distancia al Sol debe ser mayor a cero.")
+            else:
+                # Se crea el objeto y se manda a la base de datos
+                nuevo = Planeta(nombre.strip(), float(distancia), atmosfera.strip(), nave_id)
+                planeta_db.query_create_planeta(nuevo)
+                st.success(f"Planeta '{nombre}' registrado.")
+                st.rerun() # Reinicia de forma segura tras guardar exitosamente fuera de peligro de ciclos infinitos
     st.header("Mapa Estelar (Planetas)")
 
     filas = planeta_db.query_read_all_planetas() or []
@@ -176,7 +217,7 @@ def mapa_estelar():
                 st.rerun()
 
 def main():
-    st.set_page_config(page_title="Galactic Pioneer Command", page_icon="🛰️")
+    st.set_page_config(page_title="Galactic Pioneer Command")
     st.title("Galactic Pioneer Command")
     st.caption("ORT Space Agency — Sistema de gestión de la flota")
 

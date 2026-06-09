@@ -13,8 +13,8 @@ class AstronautaDB:
         conn = self.db.conectar()
         cursor = conn.cursor()
         cursor.execute(
-                "INSERT INTO astronautas (nombre, apellido, rango, horas_vuelo, id_nave) VALUES (?, ?, ?, ?, ?)"
-                (astronauta.nombre, astronauta.apellido, astronauta.rango, astronauta.horas_de_vuelo, astronauta.nave_id),
+            "INSERT INTO astronautas (nombre, apellido, rango, horas_vuelo, id_nave) VALUES (?, ?, ?, ?, ?)",
+            (astronauta.nombre, astronauta.apellido, astronauta.rango.name, astronauta.horas_de_vuelo, astronauta.nave_id)
         )
         astronauta.id = cursor.lastrowid
         conn.commit()
@@ -38,7 +38,7 @@ class AstronautaDB:
                 SELECT a.id, a.nombre, a.apellido, a.rango, a.horas_vuelo, n.nombre_nave AS nave 
                 FROM astronautas a 
                 LEFT JOIN naves n ON a.id_nave = n.id
-                """
+                """,
                 (idNaveAsignada,),
         )
         data = cursor.fetchone()
