@@ -127,7 +127,7 @@ def mapa_estelar():
     atmosferas = sorted({f[3] for f in filas if f[3]})
     filtro = st.selectbox("Filtrar por atmósfera", ["Todas"] + atmosferas)
     if filtro != "Todas":
-    filas = [f for f in filas if f[3] == filtro]
+        filas = [f for f in filas if f[3] == filtro]
 
     if not filas:
         st.info("No hay planetas cargados.")
