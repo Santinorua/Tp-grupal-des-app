@@ -5,6 +5,12 @@ from planetas import Planeta
 from planetasDB import PlanetaDB
 from astronauta import Astronauta, Rango
 from astronautaDB import AstronautaDB
+from g4b import Database
+
+
+db = Database()
+db.conectar()
+db.crear_base_espacial()
 
 nave_db = NaveDB()
 planeta_db = PlanetaDB()
@@ -125,7 +131,9 @@ def mapa_estelar():
     st.header("Mapa Estelar (Planetas)")
     filas = planeta_db.query_read_all_planetas() or []
     atmosferas = sorted({f[3] for f in filas if f[3]})
-    filtro = st.selectbox("Filtrar por atmósfera", ["Todas"] + atmosferas)
+
+    # ERROR
+    filtro = st.selectbox("Filtrar por atmósfera", ["Todas"] + atmosferas) 
     if filtro != "Todas":
         filas = [f for f in filas if f[3] == filtro]
 

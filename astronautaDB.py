@@ -30,16 +30,13 @@ class AstronautaDB:
         conn.close()
         return data
 
-    def query_read_astronautas_con_nave(self, idNaveAsignada):
+    def query_read_astronautas_con_nave(self):
         conn = self.db.conectar()
         cursor = conn.cursor()
         cursor.execute(
                 """
-                SELECT a.id, a.nombre, a.apellido, a.rango, a.horas_vuelo, n.nombre_nave AS nave 
-                FROM astronautas a 
-                LEFT JOIN naves n ON a.id_nave = n.id
-                """,
-                (idNaveAsignada,),
+                SELECT * FROM astronautas WHERE id_nave IS NOT NULL
+                """
         )
         data = cursor.fetchone()
         conn.commit()
