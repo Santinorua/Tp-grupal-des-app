@@ -38,8 +38,7 @@ class AstronautaDB:
                 SELECT * FROM astronautas WHERE id_nave IS NOT NULL
                 """
         )
-        data = cursor.fetchone()
-        conn.commit()
+        data = cursor.fetchall()
         conn.close()
         return data
 

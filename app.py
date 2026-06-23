@@ -132,7 +132,6 @@ def mapa_estelar():
     filas = planeta_db.query_read_all_planetas() or []
     atmosferas = sorted({f[3] for f in filas if f[3]})
 
-    # ERROR
     filtro = st.selectbox("Filtrar por atmósfera", ["Todas"] + atmosferas) 
     if filtro != "Todas":
         filas = [f for f in filas if f[3] == filtro]
@@ -172,57 +171,11 @@ def mapa_estelar():
             elif distancia <= 0:
                 st.error("La distancia al Sol debe ser mayor a cero.")
             else:
-                # Se crea el objeto y se manda a la base de datos
                 nuevo = Planeta(nombre.strip(), float(distancia), atmosfera.strip(), nave_id)
                 planeta_db.query_create_planeta(nuevo)
                 st.success(f"Planeta '{nombre}' registrado.")
-                st.rerun() # Reinicia de forma segura tras guardar exitosamente fuera de peligro de ciclos infinitos
-    st.header("Mapa Estelar (Planetas)")
-
-    filas = planeta_db.query_read_all_planetas() or []
-    atmosferas = sorted({f[3] for f in filas if f[3]})
-    filtro = st.selectbox("Filtrar por atmósfera", ["Todas"] + atmosferas)
-    if filtro != "Todas":
-        filas = [f for f in filas if f[3] == filtro]
-
-    if not filas:
-        st.info("No hay planetas cargados.")
-    for f in filas:
-        with st.expander(f"#{f[0]} · {f[1]}"):
-            st.write(f"Distancia al Sol: {f[2]} UA")
-            st.write(f"Atmósfera: {texto_o_default(f[3])}")
-            if st.button("Eliminar planeta", key=f"del_plan_{f[0]}"):
-                planeta_db.query_delete_planeta((f[0],))
                 st.rerun()
 
-    st.divider()
-
-    st.subheader("Registrar nuevo planeta")
-    naves = naves_por_id()
-    with st.form("form_planeta", clear_on_submit=True):
-        nombre = st.text_input("Nombre del planeta")
-        distancia = st.number_input("Distancia al Sol (UA)", min_value=0.0, step=0.1)
-        atmosfera = st.text_input("Tipo de atmósfera")
-        nave_id = None
-        if naves:
-            nave_id = st.selectbox(
-                "Nave asignada",
-                options=list(naves.keys()),
-                format_func=lambda i: naves[i].nombre_nave,
-            )
-        enviar = st.form_submit_button("Guardar planeta")
-
-        if enviar:
-            if not nombre.strip():
-                st.error("El nombre del planeta es obligatorio.")
-            elif distancia <= 0:
-                st.error("La distancia al Sol debe ser mayor a cero.")
-            else:
-                nuevo = Planeta(nombre.strip(), float(distancia),
-                                atmosfera.strip(), nave_id)
-                planeta_db.query_create_planeta(nuevo)
-                st.success(f"Planeta '{nombre}' registrado.")
-                st.rerun()
 
 def main():
     st.set_page_config(page_title="Galactic Pioneer Command")
