@@ -1,0 +1,16 @@
+nombre_planeta,distancia_al_sol,tipo_atmosfera,id_nave_asignada
+Aurelia,57.9,delgada,0
+Brontes,108.2,densa,1
+Celsius,149.6,respirable,2
+Drakon,227.9,delgada,3
+Erebus,778.5,gaseosa,4
+Fornax,1427.0,gaseosa,5
+Gaia-X,149.6,respirable,6
+Helios-9,57.9,delgada,0
+Icarus,108.2,toxica,1
+Juno,227.9,delgada,2
+Krypton,778.5,gaseosa,3
+Lumen,149.6,respirable,4
+Morpheus,1427.0,gaseosa,5
+Nereida,227.9,toxica,6
+Orion-3,108.2,densa,0
