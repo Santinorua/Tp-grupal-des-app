@@ -7,6 +7,7 @@ from astronauta import Astronauta, Rango
 from astronautaDB import AstronautaDB
 from g4b import Database
 from statistics import submit_nuevos_planetas
+import pandas as pd
 
 db = Database()
 db.conectar()
@@ -179,6 +180,55 @@ def mapa_estelar():
                 st.rerun()
 
 
+def estadisticas():
+    st.header("Estadísticas")
+
+    filas = planeta_db.query_read_all_planetas() or []
+    if not filas:
+        st.info("No hay planetas cargados.")
+        return
+
+    df = pd.DataFrame(filas, columns=["id", "nombre", "distancia", "atm", "id_nave_asignada"])
+
+    # Normalizar distancias y formatear a 2 decimales
+    df["distancia"] = pd.to_numeric(df["distancia"], errors="coerce")
+    dist = df["distancia"].dropna()
+
+    media = dist.mean() if not dist.empty else float("nan")
+    mediana = dist.median() if not dist.empty else float("nan")
+    modos_series = dist.mode().round(2)
+    atm_mode_series = df["atm"].dropna().astype(str).mode()
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Media (UA)", f"{media:.2f}" if not pd.isna(media) else "N/A")
+    c2.metric("Mediana (UA)", f"{mediana:.2f}" if not pd.isna(mediana) else "N/A")
+
+    # Mostrar la moda numérica (distancia) en el tercer cuadro
+    if modos_series.empty:
+        distancia_moda_text = "N/A"
+    else:
+        distancia_moda_text = f"{modos_series.iloc[0]:.2f}"
+
+    c3.metric("Moda (UA)", distancia_moda_text)
+
+    # Mostrar la moda de la atmósfera en su propia fila, centrada
+    c4, c5, c6 = st.columns(3)
+    if atm_mode_series.empty:
+        atm_text = "N/A"
+    else:
+        atm_text = str(atm_mode_series.iloc[0])
+    c5.metric("Moda (Atmósfera)", atm_text)
+
+    st.subheader("Análisis")
+    st.write("En base al valor de la media y la mediana podemos darnos cuenta que hay outliers que mueven la media hacia arriba, ya que la mediana es bastante menor a la media.")
+
+    st.subheader("Tabla de planetas")
+    tabla = df[["nombre", "distancia", "atm"]].rename(columns={"nombre": "Nombre", "distancia": "Distancia (UA)", "atm": "Atmósfera"})
+
+    tabla["Distancia (UA)"] = tabla["Distancia (UA)"].apply(lambda x: f"{x:.2f}" if pd.notna(x) else "N/A")
+    st.table(tabla)
+
+
 def main():
     st.set_page_config(page_title="Galactic Pioneer Command")
     st.title("Galactic Pioneer Command")
@@ -186,15 +236,17 @@ def main():
 
     seccion = st.sidebar.radio(
         "Navegación",
-        ["Astronautas", "Naves", "Planetas"],
+        ["Astronautas", "Naves", "Planetas", "Estadísticas"],
     )
 
     if seccion == "Astronautas":
         panel_astronautas()
     elif seccion == "Naves":
         hangar_naves()
-    else:
+    elif seccion == "Planetas":
         mapa_estelar()
+    else:
+        estadisticas()
 
 
 if __name__ == "__main__":
