@@ -6,7 +6,7 @@ from planetasDB import PlanetaDB
 from astronauta import Astronauta, Rango
 from astronautaDB import AstronautaDB
 from g4b import Database
-
+from statistics import submit_nuevos_planetas
 
 db = Database()
 db.conectar()
@@ -15,6 +15,8 @@ db.crear_base_espacial()
 nave_db = NaveDB()
 planeta_db = PlanetaDB()
 astro_db = AstronautaDB()
+
+submit_nuevos_planetas()
 
 def naves_a_objetos(filas):
     lista = []
