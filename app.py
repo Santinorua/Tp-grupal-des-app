@@ -190,7 +190,6 @@ def estadisticas():
 
     df = pd.DataFrame(filas, columns=["id", "nombre", "distancia", "atm", "id_nave_asignada"])
 
-    # Normalizar distancias y formatear a 2 decimales
     df["distancia"] = pd.to_numeric(df["distancia"], errors="coerce")
     dist = df["distancia"].dropna()
 
@@ -203,7 +202,6 @@ def estadisticas():
     c1.metric("Media (UA)", f"{media:.2f}" if not pd.isna(media) else "N/A")
     c2.metric("Mediana (UA)", f"{mediana:.2f}" if not pd.isna(mediana) else "N/A")
 
-    # Mostrar la moda numérica (distancia) en el tercer cuadro
     if modos_series.empty:
         distancia_moda_text = "N/A"
     else:
@@ -211,7 +209,6 @@ def estadisticas():
 
     c3.metric("Moda (UA)", distancia_moda_text)
 
-    # Mostrar la moda de la atmósfera en su propia fila, centrada
     c4, c5, c6 = st.columns(3)
     if atm_mode_series.empty:
         atm_text = "N/A"
@@ -220,7 +217,7 @@ def estadisticas():
     c5.metric("Moda (Atmósfera)", atm_text)
 
     st.subheader("Análisis")
-    st.write("En base al valor de la media y la mediana podemos darnos cuenta que hay outliers que mueven la media hacia arriba, ya que la mediana es bastante menor a la media.")
+    st.write("En base al valor de la media y la mediana podemos darnos cuenta que hay outliers que mueven la media hacia arriba, ya que la mediana es bastante menor a la media. La moda, 0.72UA, se encuentra en nuestros datos 4 veces, segudo por 1.00UA con 3 veces.")
 
     st.subheader("Tabla de planetas")
     tabla = df[["nombre", "distancia", "atm"]].rename(columns={"nombre": "Nombre", "distancia": "Distancia (UA)", "atm": "Atmósfera"})
