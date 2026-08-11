@@ -217,7 +217,7 @@ def estadisticas():
     c5.metric("Moda (Atmósfera)", atm_text)
 
     st.subheader("Análisis")
-    st.write("En base al valor de la media y la mediana podemos darnos cuenta que hay outliers que mueven la media hacia arriba, ya que la mediana es bastante menor a la media. La moda, 0.72UA, se encuentra en nuestros datos 4 veces, segudo por 1.00UA con 3 veces.")
+    st.write("En base al valor de la media y la mediana podemos darnos cuenta que hay outliers que mueven la media hacia arriba, ya que la mediana es bastante menor a la media. La moda, 0.72UA, se encuentra en nuestros datos 4 veces, seguido por 1.00UA con 3 veces.")
 
     st.subheader("Tabla de planetas")
     tabla = df[["nombre", "distancia", "atm"]].rename(columns={"nombre": "Nombre", "distancia": "Distancia (UA)", "atm": "Atmósfera"})
